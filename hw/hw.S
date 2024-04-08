@@ -12,7 +12,7 @@ _start:                                 # Beginning of the program
     movw $0, %si                        # Initialize register to zero
 
 loop:				
-	movb $msg(%si), %al 	                # Offset each character in the message
+	movb $msg(%si), %al 	            # Offset each character in the message
 	cmp $0, %al		                    # Comparing if char is not zero 
 	je halt			                    # Jump to halt if char is zero
 	int $0x10		                    # If not zero, call BIOS video interrupt
