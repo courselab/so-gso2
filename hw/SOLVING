@@ -6,7 +6,7 @@ Exercise 01
 
 a) The "hw.S" was written in AT&T assembly syntax.
 b) The "hwasm.py" has been implemented.
-c) Using the "hwasm.py" and "hw.S" as input was produced the "hw.bin".
+c) Using the "hwasm.py" and "hw.S" as input was produced the "hw.bin" as output.
 d) Yes, the "hw.bin" output produced by the ad hoc assembler + linker was the same that produced by "eg.bin" .
 e) Partially. The beggining of the program was equivalent, but for the directives ".string", ".fill" and ".word",
    for example, the disassemble was different.

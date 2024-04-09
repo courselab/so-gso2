@@ -1,5 +1,6 @@
-labels_list = {
-    ".": b"\xa2"
+address_list = {
+    ".": b"\xa2",
+    "si": b"\xc6",
 }
 
 opcode_map = {
@@ -121,8 +122,8 @@ def get_fill_args(value):
     expr = value[0][start_index-1:end_index+1]
     nums = numbers.split("-")
     if len(nums) > 1:
-        nums[0] = labels_list[nums[0]]
-        nums[1] = labels_list[nums[1]]
+        nums[0] = address_list[nums[0]]
+        nums[1] = address_list[nums[1]]
         res = nums[0][0] - nums[1][0]
     value[0] = value[0].replace(expr, str(res))
     nums = value[0].split("-")
@@ -140,10 +141,8 @@ def get_value_from_mov(value):
     if start_index >= 0 and end_index >=0:
         string = value[start_index:end_index]
         string = string.replace("%", "")
-        #print(string)
         temp_string = value[:start_index-1]
-        #print(temp_string)
-        val = b"\x84" + labels_list[temp_string] + b"\x7c"
+        val = b"\x84" + address_list[temp_string] + address_list["_start"]
         return val
     return string_to_byte(value)
 
@@ -164,18 +163,17 @@ def assemble(input_file="hw.S", output_file="hw.bin"):
                 # Vamos tratar os labels existentes.
                 label = get_label(new_line)
                 if len(label) > 0:
-                    #continue
-                    #value = get_value_by_code(code, new_line)
                     if label == "_start":
-                        labels_list[label] = b"\x7c"
+                        address_list[label] = b"\x7c"
                         continue
                     elif label == "loop":
-                        labels_list[label] = b"\xf1"
+                        address_list[label] = b"\xf1"
                         continue
                     elif label == "halt":
+                        address_list[label] = b"\x14"
                         continue
                     elif label == "msg":
-                        labels_list[label] = b"\x17"
+                        address_list[label] = b"\x17"
                         continue
 
         # Vamos ler cada linha do arquivo ".asm" e processar as instruções
@@ -193,10 +191,8 @@ def assemble(input_file="hw.S", output_file="hw.bin"):
                 if code.startswith("."):
                     # Vamos tratar as diretivas code16, global, string, fill e word
                     if code == ".code16":
-                        # TODO: Tratar
                         continue
                     elif code == ".global":
-                        # TODO: Tratar
                         continue
                     elif code == ".string":
                         # Devemos adicionar a string definida ao string de bytes
@@ -221,7 +217,6 @@ def assemble(input_file="hw.S", output_file="hw.bin"):
                     # Vamos tratar os opcodes definidos no opcode_map
                     value = get_value_by_code(code, new_line)
                     reg = get_reg_by_code(code, value, new_line)
-                    #print(code + " " + value + " " + reg)
                     
                     if code == "movb":
                         code = "movb" + reg 
@@ -236,26 +231,25 @@ def assemble(input_file="hw.S", output_file="hw.bin"):
                     elif code == "je":
                         machine_code += opcode_map[code]
                         if value == "halt":
-                            value = b"\x07"
-                            machine_code += value
+                            value = hex(address_list[value][0] - b"\x0d"[0])
+                            machine_code += string_to_byte(value)
                     elif code == "int":
                         machine_code += opcode_map[code]
                         machine_code += string_to_byte(value)
                     elif code == "add":
                         machine_code += opcode_map[code]
-                        inj = b"\xc6"
-                        machine_code += inj
+                        machine_code += address_list[reg]
                         machine_code += string_to_byte(value)               
                     elif code == "hlt":
                         machine_code += opcode_map[code]
                     elif code == "jmp":
                         machine_code += opcode_map[code]
                         if value == "loop":
-                            value = labels_list[value]
+                            value = address_list[value]
                             machine_code += value
                         if value == "halt":
-                            value = b"\xfd"
-                            machine_code += value
+                            value = hex(address_list[value][0] + b"\xe9"[0])
+                            machine_code += string_to_byte(value)
                     else:
                         # TODO: Código não identificado, precisa parsear
                         pass  
