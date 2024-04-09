@@ -1,0 +1,5 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: so-gso2
+Upstream-Contact: Gustavo Leite <gujoseleite@gmail.com>
+Source: https://github.com/courselab/so-gso2.git
+
