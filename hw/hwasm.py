@@ -231,7 +231,7 @@ def assemble(input_file="hw.S", output_file="hw.bin"):
                     elif code == "je":
                         machine_code += opcode_map[code]
                         if value == "halt":
-                            value = hex(address_list[value][0] - b"\x0d"[0])
+                            value = hex(address_list[value][0] - (len(machine_code)+1))
                             machine_code += string_to_byte(value)
                     elif code == "int":
                         machine_code += opcode_map[code]
@@ -248,7 +248,8 @@ def assemble(input_file="hw.S", output_file="hw.bin"):
                             value = address_list[value]
                             machine_code += value
                         if value == "halt":
-                            value = hex(address_list[value][0] + b"\xe9"[0])
+                            value = (len(machine_code) - address_list[value][0])
+                            value = hex(b"\xFF"[0] - value)
                             machine_code += string_to_byte(value)
                     else:
                         # TODO: Código não identificado, precisa parsear
