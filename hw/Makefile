@@ -13,12 +13,12 @@
 
 all: hw.bin
 
-hw.bin : hw.S hwasm
-	./hwasm hw.S hw.bin
+hw.bin : hw.S hwasm.py
+	./hwasm.py hw.S hw.bin
 
-hwasm : hwasm.c
-	gcc -Wall --ansi hwasm.c -o hwasm
-
+hwasm : hwasm.py
+#	gcc -Wall --ansi hwasm.c -o hwasm
+	
 hw2.bin: hw2.o
 	ld -melf_i386 --oformat=binary -Ttext=0x7c00 hw2.o -o h2.bin
 
