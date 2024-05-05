@@ -191,9 +191,15 @@ timedate:
 	mov $' ', %al		# Separator
 	call print_char
 	call time
-	
+	mov $' ', %al		# Separator
+	call print_char
+
 	# Print a CR-LF sequence.
-	lea crlf, %cx		
+	lea date_format, %cx		
 	call print	
-	
+	lea crlf, %cx		
+	call print
 	ret
+
+date_format:
+	.string "+03"

@@ -4,7 +4,7 @@
 
 1)  Done.
 2)  Done.
-3)  The new command "timedate" was implemented to print on the screen the RTC time/date.
+3)  The new command "timedate" was implemented to print on the screen the RTC time/date. (Inspired by the command "date" from Linux)
     For this was used the BIOS service 1A/02 for RTC time and 1A/04 for RTC date. 
     These services return:
         BIOS service 1A/04:
@@ -17,7 +17,12 @@
             CL = minutes in BCD
             DH = seconds in BCD
     
-    So, for each return was needed to convert BCD to ASCII and print on the screen.
+    Thus, for each return it was necessary to convert BCD to ASCII and print it on the screen.
 
-    One interesting point was during the implementation I had problems with the space to write my program.
-    So the code was optimized to use less memory and the command help was removed.
+    An interesting point was that during the implementation I had size problems to write my program.
+    So the code was optimized to use less memory and the help command was removed.
+
+References:
+    - https://en.wikipedia.org/wiki/BIOS_interrupt_call#References
+    - https://www.ascii-code.com/
+    - https://www.tutorialspoint.com/assembly_programming/assembly_registers.html
