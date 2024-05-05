@@ -17,5 +17,6 @@ void __attribute__((fastcall)) print();
 void __attribute__((fastcall)) println();
 void __attribute__((fastcall)) readln(char *);
 
+void __attribute__((fastcall)) time (void);
 
 #endif

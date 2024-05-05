@@ -8,7 +8,7 @@
 #  Gustavo Leite <gujoseleite@gmail.com>
 
 	.code16
-	.global clear, print, readln, println, strcmp
+	.global clear, print, readln, println, strcmp, time
 	
 	.section .text
 
@@ -35,7 +35,7 @@ clear:
 print:
         pusha			/* Save all GP registers.              */
         mov %cx, %bx		/* Copy argument into base register.   */
-	mov $0x0, %si		/* Initialize buffer index.            */
+		mov $0x0, %si		/* Initialize buffer index.            */
         mov $0x0e, %ah          /* BIOS video service: TTY mode.       */
 print_loop:
         mov (%bx, %si), %al	/* Get each ASCII character.           */
@@ -109,4 +109,64 @@ readln_end:
 
 crlf:
 	.byte 0xd, 0x0a, 0x0 	/* CR-FL seqquence.  */
+
+	## void time(void)
+	##
+	## Call BIOS service to get RTC time.
+
+time:
+	pusha			/* Save all GP registers.              */
+	
+	# BIOS service 1A/02 to get current time
+    mov $0x02, %ah              
+    int $0x1A                   
+
+	/* Return for BIOS service 1A/02:
+		CH = hours in BCD
+		CL = minutes in BCD
+		DH = seconds in BCD
+	*/
+
+    # Hours
+    call print_bcd
+	mov $':', %al		# Separator
+	call print_char
+
+    # Minutes
+    mov %cl, %ch
+	call print_bcd              
+	mov $':', %al		# Separator
+	call print_char
+
+    # Seconds
+    mov %dh, %ch
+    call print_bcd
+
+	# Print a CR-LF sequence.
+	lea crlf, %cx		
+	call print		
+
+	popa			/* Restore all GP registers.                  */
+	ret
+
+print_bcd:
+
+	# Higher nibble
+    mov %ch, %al                # Move for manipulation in AL
+	shr $4, %al                 # Get higher nibble
+	add $0x30, %al              # Convert to ASCII
+	call print_char             # Print
+    
+	# Lower nibble
+	mov %ch, %al                # Move for manipulation in AL
+    and $0x0F, %al              # Get lower nibble
+	add $0x30, %al             	# Convert to ASCII
+    call print_char            	# Print 
+    
+	ret
+
+print_char:
+    mov $0x0E, %ah
+    int $0x10
+    ret
 
