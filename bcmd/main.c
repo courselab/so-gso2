@@ -28,10 +28,8 @@ int main()
     readln(buffer);		/* Read use input.            */
 
     if (buffer[0]) {
-      if (!strcmp(buffer,"time")) {
-	      time();
-      } else if (!strcmp(buffer,"help")) {
-	      println("A Beattles's song.");
+      if (!strcmp(buffer,"timedate")) {
+	      timedate();
       } else {
 	      println("Unkown command.");
       } 

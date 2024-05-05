@@ -8,7 +8,7 @@
 #  Gustavo Leite <gujoseleite@gmail.com>
 
 	.code16
-	.global clear, print, readln, println, strcmp, time
+	.global clear, print, readln, println, strcmp, time, date, timedate
 	
 	.section .text
 
@@ -117,7 +117,7 @@ crlf:
 time:
 	pusha			/* Save all GP registers.              */
 	
-	# BIOS service 1A/02 to get current time
+	# BIOS service 1A/02 to get RTC time
     mov $0x02, %ah              
     int $0x1A                   
 
@@ -140,11 +140,7 @@ time:
 
     # Seconds
     mov %dh, %ch
-    call print_bcd
-
-	# Print a CR-LF sequence.
-	lea crlf, %cx		
-	call print		
+    call print_bcd	
 
 	popa			/* Restore all GP registers.                  */
 	ret
@@ -170,3 +166,47 @@ print_char:
     int $0x10
     ret
 
+date:
+	pusha			/* Save all GP registers.              */
+	
+	# BIOS service 1A/04 to get RTC date
+    mov $0x04, %ah              
+    int $0x1A                   
+
+	/* Return for BIOS service 1A/04:
+		CH = century in BCD (decimal 19 or 20)
+		CL = year in BCD
+		DH = month in BCD
+		DL = day in BCD
+	*/
+
+    # Year
+    mov %cl, %ch
+	call print_bcd              
+	mov $' ', %al		# Separator
+	call print_char
+
+    # Month
+    mov %dh, %ch
+    call print_bcd
+	mov $' ', %al		# Separator
+	call print_char
+
+    # Day
+    mov %dl, %ch
+    call print_bcd
+
+	popa			/* Restore all GP registers.                  */
+	ret
+
+timedate:
+	call date
+	mov $' ', %al		# Separator
+	call print_char
+	call time
+	
+	# Print a CR-LF sequence.
+	lea crlf, %cx		
+	call print	
+	
+	ret
