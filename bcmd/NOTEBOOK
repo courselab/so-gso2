@@ -1,3 +1,23 @@
 #    SPDX-FileCopyrightText: 2024 Gustavo Leite <gujoseleite@gmail.com>
 #   
 #    SPDX-License-Identifier: GPL-3.0-or-later
+
+1)  Done.
+2)  Done.
+3)  The new command "timedate" was implemented to print on the screen the RTC time/date.
+    For this was used the BIOS service 1A/02 for RTC time and 1A/04 for RTC date. 
+    These services return:
+        BIOS service 1A/04:
+            CL = year in BCD
+            DH = month in BCD
+            DL = day in BCD
+
+        BIOS service 1A/02:
+            CH = hours in BCD
+            CL = minutes in BCD
+            DH = seconds in BCD
+    
+    So, for each return was needed to convert BCD to ASCII and print on the screen.
+
+    One interesting point was during the implementation I had problems with the space to write my program.
+    So the code was optimized to use less memory and the command help was removed.

@@ -110,22 +110,12 @@ readln_end:
 crlf:
 	.byte 0xd, 0x0a, 0x0 	/* CR-FL seqquence.  */
 
-	## void time(void)
-	##
-	## Call BIOS service to get RTC time.
-
 time:
 	pusha			/* Save all GP registers.              */
 	
 	# BIOS service 1A/02 to get RTC time
     mov $0x02, %ah              
     int $0x1A                   
-
-	/* Return for BIOS service 1A/02:
-		CH = hours in BCD
-		CL = minutes in BCD
-		DH = seconds in BCD
-	*/
 
     # Hours
     call print_bcd
@@ -173,13 +163,6 @@ date:
     mov $0x04, %ah              
     int $0x1A                   
 
-	/* Return for BIOS service 1A/04:
-		CH = century in BCD (decimal 19 or 20)
-		CL = year in BCD
-		DH = month in BCD
-		DL = day in BCD
-	*/
-
     # Year
     mov %cl, %ch
 	call print_bcd              
@@ -198,6 +181,10 @@ date:
 
 	popa			/* Restore all GP registers.                  */
 	ret
+
+	## void timedate(void)
+	##
+	## Call BIOS service to get RTC time/date and print on the screen.
 
 timedate:
 	call date
