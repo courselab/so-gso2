@@ -49,12 +49,14 @@ SECTIONS
 	   entirely from this linker script (and update the Makefile 
 	   accordingly).*/	
 
+/*
+	Removing prog_example from linker.
 	.prog_example :		
 	{
 	  prog.o      (.text .data .bss. .rodata)
 	  libtydos.o  (.text .data .bss. .rodata)
 	}
-
+*/
 	_KERNEL_SIZE = . - _KERNEL_ADDR; /* How many bytes we'll read.      */
 
 	_END_STACK = 0x7c00;	/* Place the stack bellow the program.      */
