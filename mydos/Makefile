@@ -79,6 +79,11 @@ libtydos.o : tydos.h
 libtydos.a : libtydos.o
 	ar rcs $@ $^
 
+# Create a 1.44 MB floppy image (2880 * 512 bytes)
+disk.img:
+	rm -f $@
+	dd if=/dev/zero of=$@ count=2880
+
 # Housekeeping.
 
 .PHONY: clean

@@ -6,3 +6,4 @@
 2)  Done.
 3)  Done. Updating the name to SODOS.
 4)  Done. Removing the statically linked program.
+5)  Done. Adding rule in Makefile to create disk.img and formatting using tyFS.
