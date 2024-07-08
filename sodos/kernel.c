@@ -90,6 +90,7 @@ struct cmd_t cmds[] =
     {"help",    f_help},     /* Print a help message.       */
     {"quit",    f_quit},     /* Exit TyDOS.                 */
     {"exec",    f_exec},     /* Execute an example program. */
+    {"list",    f_list},     /* List disk files. */
     {0, 0}
   };
 
@@ -99,15 +100,21 @@ struct cmd_t cmds[] =
 void f_help()
 {
   kwrite ("...oh, Do you need some help?!\n\n");
-  kwrite ("   We can try also some commands:\n");
-  kwrite ("      exec    (to execute an user program example\n");
-  kwrite ("      quit    (to exit TyDOS)\n");
+  kwrite ("  We can try also some commands:\n");
+  kwrite ("    list   (to list all files in disk\n");
+  kwrite ("    exec   (to execute an user program example\n");
+  kwrite ("    quit   (to exit SODOS)\n");
 }
 
 void f_quit()
 {
-  kwrite ("Program halted. ByeDOS.");
+  kwrite ("Program halted. ByeSODOS.");
   go_on = 0;
+}
+
+void f_list()
+{
+
 }
 
 /* Built-in shell command: example.

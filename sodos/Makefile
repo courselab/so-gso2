@@ -23,7 +23,7 @@ dos = sodos
 
 # Build the OS and an example user program.
 
-all: $(dos).bin prog.bin disk.img
+all: $(dos).bin prog.bin write-sodos
 
 # Link all objects needed by the OS.
 
@@ -93,7 +93,7 @@ write-sodos: $(dos).bin disk.img
 .PHONY: clean
 
 clean:
-	rm -f *.bin *.o *~ *.s *.a *.img
+	rm -f *.bin *.o *~ *.s *.a
 
 
 ## Bintools: convenience rules for inspecting binary files
