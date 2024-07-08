@@ -8,3 +8,4 @@
 4)  Done. Removing the statically linked program.
 5)  Done. Adding rule in Makefile to create disk.img and formatting using tyFS.
 6)  Done. Writting 'sodos.bin' 'into disk.img'. Disk was formatted with 12 sectors reserved for boot (or 6KB) and 16KB size file. 
+7)  Done. Testing 'sodos.bin' using 'make disk.img/run'.
