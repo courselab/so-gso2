@@ -17,9 +17,9 @@
 # By default, the bootable program name will by $(dosname).bin
 # If you export this directory to extend the example as part of a programming
 # exercise, redefine $(dos) to reflect your own DOS name, say
-# dos = "amazingOS" 
 
-dos=$(shell basename $$(realpath .))
+dos = sodos
+#dos=$(shell basename $$(realpath .))
 
 # Build the OS and an example user program.
 
@@ -79,11 +79,15 @@ libtydos.o : tydos.h
 libtydos.a : libtydos.o
 	ar rcs $@ $^
 
-# Create a 1.44 MB floppy image (2880 * 512 bytes)
-disk.img:
-	rm -f $@
-	dd if=/dev/zero of=$@ count=2880
+# # Create a 1.44 MB floppy image (2880 * 512 bytes)
+# disk.img:
+# 	rm -f $@
+# 	dd if=/dev/zero of=$@ bs=512 count=2880
 
+# # Rule to write 'mydos.bin' into 'disk.img'
+# write-dos-into-disk: $(dos).bin disk.img
+# 	dd if=$(dos).bin of=disk.img bs=512 iseek=16 oseek=16 conv=notrunc
+	
 # Housekeeping.
 
 .PHONY: clean
