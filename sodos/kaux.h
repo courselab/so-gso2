@@ -39,4 +39,6 @@ void input (char *);
 void writexy(unsigned char, unsigned char, const char *);
 void clearxy(void);
 
+void read_disk(unsigned int start_sector, unsigned int sectors_to_read, void *section_memory_to_load);
+
 #endif  /* KLIB_H  */

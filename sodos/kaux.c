@@ -89,4 +89,36 @@ int strcmp(const char *s1, const char *s2)
   return (*s1 - *s2);
 }
 
+void read_disk(unsigned int start_sector, unsigned int sectors_to_read, void *section_memory_to_load) {
+    __asm__ volatile(
+        "pusha \n"                              // Save all registers
+        "mov boot_drive, %%dl \n"               // Boot drive (rt0.o)
+        "mov $0x2, %%ah \n"                     // BIOS service to read
+        "mov %[sectorsToRead], %%al \n"         // Sectors to read
+        "mov $0x0, %%ch \n"                     // Cylinder 
+        "mov %[startSector], %%cl \n"           // Sector
+        "mov $0x0, %%dh \n"                     // Head
+        "mov %[sectionMemoryToLoad], %%bx \n"   // Address to load into memory
+        "int $0x13 \n"                          // Call BIOS interrupt 0x13 to read sectors
+      
+      #if 0
+	      "mov $error%=, %%cx \n"
+	      "jc fatal \n"
+	      "jmp end%=\n"
+      #endif
+      
+      #if 0
+	      "error%=: \n"
+	      " .string \"Read failed\\n\"  \n"
+	      "end%=:"
+      #endif
+	
+      "popa \n"                                 // Restore registers
 
+      // Input constraints for inline assembly, providing C variables as inputs
+      ::
+      [startSector] "g"(start_sector),
+      [sectorsToRead] "g"(sectors_to_read),
+      [sectionMemoryToLoad] "g"(section_memory_to_load)
+    );
+}
