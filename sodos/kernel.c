@@ -18,6 +18,11 @@
 #include "kernel.h"		/* Essential kernel functions.  */
 #include "kaux.h"		/* Auxiliary kernel functions.  */
 
+#define DIR_ENTRY_LEN 32 	                /* Max file name length in bytes.           */
+#define FS_SIGLEN 4                       /* Signature length.                        */
+#define HEADER_START 0x7c00               
+#define SECTOR_SIZE 512
+
 /* Kernel's entry function. */
 
 void kmain(void)
@@ -81,7 +86,6 @@ void shell()
     }
 }
 
-
 /* Array with built-in command names and respective function pointers. 
    Function prototypes are in kernel.h. */
 
@@ -112,10 +116,49 @@ void f_quit()
   go_on = 0;
 }
 
-void f_list()
-{
+/* Header struct */
 
+struct fs_header_t
+{
+  unsigned char  signature[FS_SIGLEN];    /* The file system signature.              */
+  unsigned short total_number_of_sectors; /* Number of 512-byte disk blocks.         */
+  unsigned short number_of_boot_sectors;  /* Sectors reserved for boot code.         */
+  unsigned short number_of_file_entries;  /* Maximum number of files in the disk.    */
+  unsigned short max_file_size;		        /* Maximum size of a file in blocks.       */
+  unsigned int unused_space;              /* Remaining space less than max_file_size.*/
+} __attribute__((packed));                /* Disable alignment to preserve offsets.  */
+
+/* List files function */
+
+void f_list() {
+
+    struct fs_header_t *header = (struct fs_header_t *) HEADER_START;
+
+    // Calculate the starting sector of the directory list
+    unsigned int start_sector = header->number_of_boot_sectors;
+    
+    // Calculate the number of sectors to read 
+    unsigned int sectors_to_read = header->number_of_file_entries * 32 / SECTOR_SIZE;
+
+    // Allocate buffer in RAM to load the directory list
+    void *section_memory_to_load = (void*)(start_sector * SECTOR_SIZE);
+
+    // Read the specified number of sectors from the disk into the allocated RAM buffer
+    read_disk(start_sector, sectors_to_read, section_memory_to_load);
+
+    for (unsigned short i = 0; i < header->number_of_file_entries; i++) {
+        // Calculate the address of the current filename
+        const char *filename = section_memory_to_load + (i * DIR_ENTRY_LEN);
+        
+        if (filename[0] == '\0') {
+            continue;
+        }
+
+        kwrite(filename);
+        kwrite("\n"); 
+    }
 }
+
 
 /* Built-in shell command: example.
 
