@@ -23,7 +23,7 @@ dos = sodos
 
 # Build the OS and an example user program.
 
-all: $(dos).bin prog.bin write-sodos
+all: $(dos).bin prog.bin disk.img write-sodos
 
 # Link all objects needed by the OS.
 
@@ -80,9 +80,10 @@ libtydos.a : libtydos.o
 	ar rcs $@ $^
 
 # Rule to create a 1.44 MB floppy image (2880 * 512 bytes)
-disk.img:
+disk.img: tyfsedit
 	rm -f $@
 	dd if=/dev/zero of=$@ count=2880
+	./tyfsedit < tyfsedit.cmd
 
 # Rule to write 'sodos.bin' into 'disk.img'
 write-sodos: $(dos).bin disk.img
@@ -93,7 +94,7 @@ write-sodos: $(dos).bin disk.img
 .PHONY: clean
 
 clean:
-	rm -f *.bin *.o *~ *.s *.a
+	rm -f *.bin *.o *~ *.s *.a *.img
 
 
 ## Bintools: convenience rules for inspecting binary files
