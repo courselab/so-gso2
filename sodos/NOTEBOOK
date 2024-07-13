@@ -10,5 +10,5 @@
 6)  Done. Writting 'sodos.bin' 'into disk.img'. Disk was formatted with 12 sectors reserved for boot (or 6KB) and 16KB size file. 
 7)  Done. Testing 'sodos.bin' using 'make disk.img/run'.
 8)  Done. Implementing function 'read_disk' (inline assembly) to read files from disk and show in terminal using SODOS command 'list'.
-9)  TODO.
+9)  Done. Implementing functions to execute external programs.
 10) TODO.

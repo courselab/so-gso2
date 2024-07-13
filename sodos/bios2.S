@@ -15,7 +15,7 @@
            by the bootloader (so as to respect the 512-byte length limit).*/
 	
 	.code16gcc
-	.global kread, udelay, register_syscall_handler, sys_write
+	.global kread, udelay, register_syscall_handler, sys_write, exec
 	
 	.section .text
 
@@ -133,7 +133,14 @@ msg_err_lprg:
 msg_err_read:
 	.string "Drive read error\n"
 	
-	
+exec:
+	pusha 
+	pushl $exec_end		/* Push return address. */
+	jmp 0xfe00			/* Jump to program. */
+exec_end:
+	popa
+	ret
+
      /* Notes.
 	
     (1) When coding in assembly for 16-bit, the directive .code16 instructs

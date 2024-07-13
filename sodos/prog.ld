@@ -20,8 +20,9 @@ SECTIONS
 	
         .bin :
 	{
-          *.o   (.text .data .bss .rodata) /* Command line objects. */
-	  libtydos.o (.text .data .bss .rodata) /* Runtime library. */
+		crt0.o									/* Prepend crt0.o */
+        *.o   (.text .data .bss .rodata) 		/* Command line objects. */
+	  	libtydos.o (.text .data .bss .rodata) 	/* Runtime library. */
 	}		
 }
 INPUT(libtydos.a)		/* Link with the TyDOS user library. */

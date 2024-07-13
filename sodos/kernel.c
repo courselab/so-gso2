@@ -17,6 +17,7 @@
 #include "bios2.h"		/* For kread() etc.             */
 #include "kernel.h"		/* Essential kernel functions.  */
 #include "kaux.h"		/* Auxiliary kernel functions.  */
+#include <stddef.h>
 
 #define DIR_ENTRY_LEN 32 	                /* Max file name length in bytes.           */
 #define FS_SIGLEN 4                       /* Signature length.                        */
@@ -81,8 +82,8 @@ void shell()
 	 corresponding file with a matching name in the storage device, 
 	 load it and transfer it the execution. Left as exercise. */
       
-      if (!cmds[i].funct)
-	kwrite ("Command not found\n");
+    if (!cmds[i].funct)
+      f_exec(buffer);
     }
 }
 
@@ -93,7 +94,6 @@ struct cmd_t cmds[] =
   {
     {"help",    f_help},     /* Print a help message.       */
     {"quit",    f_quit},     /* Exit TyDOS.                 */
-    {"exec",    f_exec},     /* Execute an example program. */
     {"list",    f_list},     /* List disk files. */
     {0, 0}
   };
@@ -106,7 +106,6 @@ void f_help()
   kwrite ("...oh, Do you need some help?!\n\n");
   kwrite ("  We can try also some commands:\n");
   kwrite ("    list   (to list all files in disk\n");
-  kwrite ("    exec   (to execute an user program example\n");
   kwrite ("    quit   (to exit SODOS)\n");
 }
 
@@ -146,7 +145,7 @@ void f_list() {
     // Read the specified number of sectors from the disk into the allocated RAM buffer
     read_disk(start_sector, sectors_to_read, section_memory_to_load);
 
-    for (unsigned short i = 0; i < header->number_of_file_entries; i++) {
+    for (size_t i = 0; i < header->number_of_file_entries; i++) {
         // Calculate the address of the current filename
         const char *filename = section_memory_to_load + (i * DIR_ENTRY_LEN);
         
@@ -174,10 +173,42 @@ void f_list() {
 
   */
 
-extern int main();
-void f_exec()
+void f_exec(const char* prog_name)
 {
-  kwrite ("      None program linked\n");
-  //main();			/* Call the user program's 'main' function. */
+  struct fs_header_t *header = (struct fs_header_t *) HEADER_START;
+
+  // Calculate the starting sector of the directory list
+   unsigned int start_sector = header->number_of_boot_sectors;
+    
+  // Calculate the number of sectors to read 
+  unsigned int sectors_to_read = header->number_of_file_entries * 32 / SECTOR_SIZE;
+
+  // Allocate buffer in RAM to load the directory list
+  void *section_memory_to_load = (void*)(start_sector * SECTOR_SIZE);
+
+  // Read the specified number of sectors from the disk into the allocated RAM buffer
+  read_disk(start_sector, sectors_to_read, section_memory_to_load);
+
+  unsigned int prog_address = -1;
+  for (size_t i = 0; i < header->number_of_file_entries; i++) {
+    char *filename = section_memory_to_load + (i * DIR_ENTRY_LEN);
+    if (strcmp(filename, prog_name) == 0) {
+      prog_address = start_sector + sectors_to_read + (i * DIR_ENTRY_LEN);
+      break;
+    }
+  }
+
+  if (prog_address == -1) {
+    kwrite("Program not found on the disk.\n");
+    return;
+  }
+
+  unsigned int memory_offset = header->number_of_file_entries * 32 - (sectors_to_read - 1) * SECTOR_SIZE;
+  void *section_memory_to_prog = (void *)(0xfe00) - memory_offset;
+  
+  read_disk(prog_address, header->max_file_size, section_memory_to_prog);
+
+  exec();
 }
 
+extern int main();

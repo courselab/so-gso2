@@ -16,4 +16,6 @@ int __attribute__((fastcall)) kread(char *);
 
 void __attribute__((fastcall)) udelay(unsigned short);
 
+void __attribute__((fastcall)) exec(void);
+
 #endif  /* BIOS2_H  */

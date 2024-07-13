@@ -32,7 +32,7 @@ void shell();			/* Command interpreter. */
 /* Built-in commands. */
 
 void f_help();
-void f_exec();
+void f_exec(const char*);
 void f_quit();
 void f_list();
 
