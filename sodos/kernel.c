@@ -198,17 +198,22 @@ void f_exec(const char* prog_name)
     }
   }
 
-  if (prog_address == -1) {
-    kwrite("Program not found on the disk.\n");
-    return;
+  // If the program is found, load it into memory; if not, print an error on the screen
+  if (prog_address != -1) {
+    // Calculate the memory offset where the program should be loaded
+    unsigned int memory_offset = header->number_of_file_entries * 32 - (sectors_to_read - 1) * SECTOR_SIZE;
+
+    // Allocate buffer in RAM to load the program
+    void *section_memory_to_prog = (void *)(0xfe00) - memory_offset;
+    
+    // Read the specified number of sectors from the disk into the allocated RAM buffer
+    read_disk(prog_address, header->max_file_size, section_memory_to_prog);
+
+    exec();
   }
-
-  unsigned int memory_offset = header->number_of_file_entries * 32 - (sectors_to_read - 1) * SECTOR_SIZE;
-  void *section_memory_to_prog = (void *)(0xfe00) - memory_offset;
-  
-  read_disk(prog_address, header->max_file_size, section_memory_to_prog);
-
-  exec();
+  else {
+    kwrite("Failed to load program. (Not Found).\n");
+  }
 }
 
 extern int main();

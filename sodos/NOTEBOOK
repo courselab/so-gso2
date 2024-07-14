@@ -11,4 +11,4 @@
 7)  Done. Testing 'sodos.bin' using 'make disk.img/run'.
 8)  Done. Implementing function 'read_disk' (inline assembly) to read files from disk and show in terminal using SODOS command 'list'.
 9)  Done. Implementing functions to execute external programs.
-10) TODO.
+10) Done. Implementing 'hello.bin' and methods to get input from cli.
